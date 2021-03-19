@@ -35,14 +35,16 @@ public class LoginCtrl extends DBConn {
 					 rs.close();
 					 logUserIn();
 					 }
-				 myObj.close();
+				 //myObj.close();
 				 } 
 			 else {
 				 System.out.println("Epost er feil");
 				 rs.close();
 				 logUserIn();
 			 }
+			 //myObj.close();
 			 }
+		 
 		 catch (Exception e) {
 			 System.out.println(e);
 			 }
