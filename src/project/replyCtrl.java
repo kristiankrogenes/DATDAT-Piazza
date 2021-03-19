@@ -68,7 +68,7 @@ public class replyCtrl extends DBConn {
 		replyCtrl addPost = new replyCtrl();
 		addPost.connect();
 		addPost.startPost();
-		addPost.addAnswer("Exam", 1, "Answer");
+		addPost.addAnswer("Exam", 2, "Answer");
 	}
 }
 

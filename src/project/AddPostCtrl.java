@@ -7,8 +7,8 @@ import java.util.Scanner;
 public class AddPostCtrl extends DBConn {
 	
 	PreparedStatement postStatement; 
-	static int PID = 2;
-	static int TID = 1;
+	static int PID = 43;
+	static int TID = 43;
 	public static int FID = 1;
 	
 	public void startPost() {
@@ -86,5 +86,7 @@ public class AddPostCtrl extends DBConn {
 		addPost.connect();
 		addPost.startPost();
 		addPost.addHeadPost("Question", "Exam");
+		AddPostCtrl addPost2 = new AddPostCtrl();
+
 	}
 }
