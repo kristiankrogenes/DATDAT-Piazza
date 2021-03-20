@@ -1,7 +1,6 @@
 package project;
 
 import java.sql.*;
-import java.time.LocalDate;
 import java.util.Scanner;
 
 public class AddPostCtrl extends DBConn {
@@ -102,7 +101,5 @@ public class AddPostCtrl extends DBConn {
 		addPost.connect();
 		addPost.startPost();
 		addPost.addHeadPost("Question", "Exam");
-		AddPostCtrl addPost2 = new AddPostCtrl();
-
 	}
 }

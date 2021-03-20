@@ -50,7 +50,6 @@ public class LoginCtrl extends DBConn {
 			 }
 		 }
 	public static void main(String[] args) {
-	    
 	    LoginCtrl db = new LoginCtrl();
 	    db.connect();
 	    db.logUserIn();
