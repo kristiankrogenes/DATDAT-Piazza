@@ -12,7 +12,7 @@ public class replyCtrl extends DBConn {
 		 try {
 			 postStatement = conn.prepareStatement("insert into Post"
 			 		+ "(text, date, anonymity, summary, tag, email, tid, paid, type) values"
-			 		+ " ( (?), (?), NOW(), (?), (?), (?), (?), (?), (?) )");
+			 		+ " ( (?), NOW(), (?), (?), (?), (?), (?), (?), (?) )");
 			 	}
 		 catch (Exception e) {
 			 System.out.println(e);
@@ -45,7 +45,7 @@ public class replyCtrl extends DBConn {
 			}
 			//Creates an answer within an existing thread 
 	    	postStatement.setString(1, postText);
-	    	postStatement.setBoolean(2, true);
+	    	postStatement.setBoolean(2, userAnonymity);
 	    	postStatement.setString(3, null);
 	    	postStatement.setString(4, null);
 	    	postStatement.setString(5, loggedInUser);
@@ -65,10 +65,10 @@ public class replyCtrl extends DBConn {
 		LoginCtrl db = new LoginCtrl();
 	    db.connect();
 	    db.logUserIn();
-		replyCtrl addPost = new replyCtrl();
-		addPost.connect();
-		addPost.startPost();
-		addPost.addAnswer("Exam", 1, "Answer");
+		replyCtrl addPost2 = new replyCtrl();
+		addPost2.connect();
+		addPost2.startPost();
+		addPost2.addAnswer("Exam", 2, "Answer");
 	}
 }
 
