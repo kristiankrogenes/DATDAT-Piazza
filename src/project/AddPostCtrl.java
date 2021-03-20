@@ -65,18 +65,10 @@ public class AddPostCtrl extends DBConn {
 			}
 			
 			if(rs != null) {
-				try {
 					rs.close();
-				} catch (Exception e) {	
-				}
 			}
 			if(threadStatement != null) {
-				try {
 					threadStatement.close();
-				} catch (Exception e) {
-					
-					
-				}
 			}
 			// Creates a relation between the given thread and folder
 			threadInFolderStatement = conn.prepareStatement("insert into ThreadInFolder values"
