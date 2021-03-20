@@ -1,14 +1,11 @@
 package project;
 
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 
 public class PostSearchCtrl extends DBConn {
-	
-	PreparedStatement searchStatement; 
 	
 	int test = 0;
 	public Collection<Integer> searchKeyWord(String keyWord) {
