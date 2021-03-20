@@ -3,11 +3,11 @@ package project;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 
 public class StatCtrl extends DBConn {
 	
-	static int test = 0;
 	public Collection<String> getStats() {
 		Collection<String> stats = new ArrayList<>();
 		try {
@@ -17,18 +17,13 @@ public class StatCtrl extends DBConn {
 					+ " from (user left join hasread on user.email = hasread.email)"
 					+ " left join post on user.email = post.email group by user.email "
 					+ "order by threadsread desc; ";
-			System.out.println(query);
 			ResultSet rs = stmt.executeQuery(query);
 			while (rs.next()) {
-				System.out.println("hei");
-				test++;
 				String name = rs.getNString(1);
 				int postsRead = rs.getInt(2);
-				System.out.println(postsRead);
 				int postsCreated = rs.getInt(3);
-				String str = "Navn: " + name + ", Tråder lest: " + postsRead + ", Poster opprettet: " + postsCreated;
+				String str = "Navn: " + name + ", Trï¿½der lest: " + postsRead + ", Poster opprettet: " + postsCreated;
 				stats.add(str);
-				test++;
 			}
 		}
 		catch (Exception e) {	
@@ -39,9 +34,7 @@ public class StatCtrl extends DBConn {
 	public static void main(String[] args) {
 		StatCtrl stats = new StatCtrl();
 		stats.connect();
-		System.out.println(stats.getStats());
-		System.out.println(test);
-		
+		stats.getStats().stream().forEach(e -> System.out.println(e));
 	}
 
 }

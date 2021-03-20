@@ -67,10 +67,6 @@ public class replyCtrl extends DBConn {
 		addPost2.connect();
 		addPost2.startPost();
 		addPost2.addAnswer("Exam", 2, "Answer");
-//		
-//		Select user.email, count(distinct hasread.tid) as ThreadsRead, count(distinct post.pid) as Postscreated
-//		from (user left join hasread on user.email = hasread.email) left join post on user.email = post.email
-//		group by user.email; 
 	}
 }
 
