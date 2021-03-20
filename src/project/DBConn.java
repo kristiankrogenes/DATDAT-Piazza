@@ -14,7 +14,7 @@ public abstract class DBConn {
 			 Class.forName("com.mysql.cj.jdbc.Driver");
 			 Properties p = new Properties ();
 			 p.put("user","root");
-			 p.put("password","Kaffekoker123");
+			 p.put("password","fredvang98);
 			 conn = DriverManager.getConnection(
 			 "jdbc:mysql://127.0.0.1/prosjekt?"
 			 + "allowPublicKeyRetrieval=true&autoReconnect=true&useSSL=false",p);
