@@ -11,7 +11,7 @@ public class replyCtrl extends DBConn {
 	public void startPost() {
 		 try {
 			 postStatement = conn.prepareStatement("insert into Post"
-			 		+ "(text, date, anonymity, summary, tag, email, tid, paid, type) values"
+			 		+ "(text, datecreated, anonymity, summary, tag, email, tid, paid, type) values"
 			 		+ " ( (?), NOW(), (?), (?), (?), (?), (?), (?), (?) )");
 			 	}
 		 catch (Exception e) {
@@ -52,9 +52,7 @@ public class replyCtrl extends DBConn {
 	    	postStatement.setInt(6, TID);
 	    	postStatement.setInt(7, PaID);
 	    	postStatement.setString(8, type);
-	    	System.out.println(userAnonymity);
 	    	postStatement.execute();
-	    	System.out.println("hei2");
 	    	myObj.close();
 	    }
 	    catch (Exception e){
@@ -69,6 +67,10 @@ public class replyCtrl extends DBConn {
 		addPost2.connect();
 		addPost2.startPost();
 		addPost2.addAnswer("Exam", 2, "Answer");
+//		
+//		Select user.email, count(distinct hasread.tid) as ThreadsRead, count(distinct post.pid) as Postscreated
+//		from (user left join hasread on user.email = hasread.email) left join post on user.email = post.email
+//		group by user.email; 
 	}
 }
 

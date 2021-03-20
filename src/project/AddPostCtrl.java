@@ -12,7 +12,7 @@ public class AddPostCtrl extends DBConn {
 	
 	public void startPost() {
 		 try {
-			 postStatement = conn.prepareStatement("insert into Post(text, date, anonymity, summary, tag, email, tid, paid, type) values "
+			 postStatement = conn.prepareStatement("insert into Post(text, datecreated, anonymity, summary, tag, email, tid, paid, type) values "
 			 		+ " ( (?), NOW(), (?), (?), (?), (?), (?), (?), (?) )");
 			 	}
 		 catch (Exception e) {
