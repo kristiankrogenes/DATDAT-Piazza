@@ -7,14 +7,14 @@ import java.util.Scanner;
 public class AddPostCtrl extends DBConn {
 	
 	PreparedStatement postStatement; 
-	static int PID = 43;
-	static int TID = 43;
-	public static int FID = 1;
+	PreparedStatement threadStatement; 
+	PreparedStatement threadInFolderStatement; 
+
 	
 	public void startPost() {
 		 try {
-			 postStatement = conn.prepareStatement("insert into Post values"
-			 		+ " ( (?), (?), NOW(), (?), (?), (?), (?), (?), (?), (?) )");
+			 postStatement = conn.prepareStatement("insert into Post(text, date, anonymity, summary, tag, email, tid, paid, type) values "
+			 		+ " ( (?), NOW(), (?), (?), (?), (?), (?), (?), (?) )");
 			 	}
 		 catch (Exception e) {
 			 System.out.println(e);
@@ -48,30 +48,54 @@ public class AddPostCtrl extends DBConn {
 			else {
 				userAnonymity = false;
 			}
-			PreparedStatement threadStatement = conn.prepareStatement("insert into Thread values"
-			 		+ " ( (?), (?), (?) )");
-			threadStatement.setInt(1, TID);
-			threadStatement.setString(2, coursecode);
-			threadStatement.setString(3, "red"); //red represents a thread without answer
+
+			// Creates a thread 
+			String sql = "Insert into Thread(coursecode, colorcode) values (?, ?)";
+			threadStatement = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+			threadStatement.setString(1, coursecode);
+			threadStatement.setString(2, "red"); //red represents a thread without answer
 			threadStatement.execute();
-			PreparedStatement threadInFolderStatement = conn.prepareStatement("insert into ThreadInFolder values"
-			 		+ " ( (?), (?) )");
+			
+			int tid = -1;
+			rs = threadStatement.getGeneratedKeys();
+			if(rs.next()) {
+				tid = rs.getInt(1);
+			} else {
+				System.out.println("Funka ikke");
+			}
+			
+			if(rs != null) {
+				try {
+					rs.close();
+				} catch (Exception e) {	
+				}
+			}
+			if(threadStatement != null) {
+				try {
+					threadStatement.close();
+				} catch (Exception e) {
+					
+					
+				}
+			}
+			// Creates a relation between the given thread and folder
+			threadInFolderStatement = conn.prepareStatement("insert into ThreadInFolder values"
+			 		+ "( (?), (?) )");
 			threadInFolderStatement.setInt(1, FID);
-			threadInFolderStatement.setInt(2, TID);
+			threadInFolderStatement.setInt(2, tid);
 			threadInFolderStatement.execute();
-			postStatement.setInt(1, PID);
-	    	postStatement.setString(2, postText);
-	    	postStatement.setBoolean(3, userAnonymity);
-	    	postStatement.setString(4, summary);
-	    	postStatement.setString(5, tag);
-	    	postStatement.setString(6, loggedInUser);
-	    	postStatement.setInt(7, TID);
-	    	postStatement.setNull(8, Types.INTEGER);
-	    	postStatement.setString(9, "Headpost");
+			
+			//Creates a post within a new thread 
+	    	postStatement.setString(1, postText);
+	    	postStatement.setBoolean(2, userAnonymity);
+	    	postStatement.setString(3, summary);
+	    	postStatement.setString(4, tag);
+	    	postStatement.setString(5, loggedInUser);
+	    	postStatement.setInt(6, tid);
+	    	postStatement.setNull(7, Types.INTEGER);
+	    	postStatement.setString(8, "Headpost");
 	    	postStatement.execute();
-	    	System.out.println("hei");
-	    	TID++;
-	    	PID++;
+	    	
 	    	myObj.close();
 	    }
 	    catch (Exception e){

@@ -6,7 +6,6 @@ import java.util.Properties;
 public abstract class DBConn {
 	 protected Connection conn;
 	 public static String loggedInUser;
-	 public static int TID = 1;
 	 public final static String coursecode = "TDT4145";
 	 public DBConn () {
 	 }

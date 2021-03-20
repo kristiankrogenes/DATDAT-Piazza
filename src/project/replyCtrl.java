@@ -3,6 +3,7 @@ package project;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.sql.Types;
 import java.util.Scanner;
 
 public class replyCtrl extends DBConn {
@@ -42,19 +43,18 @@ public class replyCtrl extends DBConn {
 			else {
 				userAnonymity = false;
 			}
-			postStatement.setInt(1, AddPostCtrl.PID);
-	    	postStatement.setString(2, postText);
-	    	postStatement.setBoolean(3, userAnonymity);
+			
+			
+			//Creates a post within a new thread 
+	    	postStatement.setString(1, postText);
+	    	postStatement.setBoolean(2, userAnonymity);
+	    	postStatement.setString(3, null);
 	    	postStatement.setString(4, null);
-	    	postStatement.setString(5, null);
-	    	postStatement.setString(6, loggedInUser);
-	    	postStatement.setInt(7, TID);
-	    	postStatement.setInt(8, PID);
-	    	postStatement.setString(9, type);
+	    	postStatement.setString(5, loggedInUser);
+	    	postStatement.setInt(6, tid);
+	    	postStatement.setInt(7, paid);
+	    	postStatement.setString(8, type);
 	    	postStatement.execute();
-	    	System.out.println("hei");
-	    	TID++;
-	    	AddPostCtrl.PID++;
 	    	myObj.close();
 	    }
 	    catch (Exception e){
