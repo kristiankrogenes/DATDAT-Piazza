@@ -22,7 +22,7 @@ public class StatCtrl extends DBConn {
 				String name = rs.getNString(1);
 				int postsRead = rs.getInt(2);
 				int postsCreated = rs.getInt(3);
-				String str = "Navn: " + name + ", Trï¿½der lest: " + postsRead + ", Poster opprettet: " + postsCreated;
+				String str = "Navn: " + name + ", Tråder lest: " + postsRead + ", Poster opprettet: " + postsCreated;
 				stats.add(str);
 			}
 		}

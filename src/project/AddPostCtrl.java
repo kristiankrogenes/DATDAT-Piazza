@@ -11,40 +11,57 @@ public class AddPostCtrl extends DBConn {
 
 	
 	public void startPost() {
-		 try {
-			 postStatement = conn.prepareStatement("insert into Post(text, datecreated, anonymity, summary, tag, email, tid, paid, type) values "
+		try {
+			postStatement = conn.prepareStatement("insert into Post(text, datecreated, anonymity, summary, tag, email, tid, paid, type) values "
 			 		+ " ( (?), NOW(), (?), (?), (?), (?), (?), (?), (?) )");
-			 	}
-		 catch (Exception e) {
+		}
+		catch (Exception e) {
 			 System.out.println(e);
-			 }
-		 }
+		}
+	}
 	
-	public void addHeadPost(String tag, String folderName) {
+	public void addHeadPost() {
+		
+		Scanner myObj = new Scanner(System.in);
+		
+		
 		String postText;
 	    String summary;
+	    String tag;
+	    String folderName;
 	    Boolean userAnonymity;
-		Scanner myObj = new Scanner(System.in);
-	    // Enter username and press Enter
+		
 	    System.out.println("Enter Summary:");
 	    summary = myObj.nextLine();
+	    
 	    System.out.println("Enter text:"); 
 	    postText = myObj.nextLine();
+	    
+	    System.out.println("Enter tag:");
+	    tag = myObj.nextLine();
+	    
+	    System.out.println("Enter folder:");
+	    folderName = myObj.nextLine();
+	    
+	    
 	    try {
 	    	Statement stmt = conn.createStatement();
 			String query = "select anonymity from Course where Coursecode=" + '"' + coursecode + '"';
 			ResultSet rs = stmt.executeQuery(query);
 			rs.next();
+			
 			Boolean anonymity = rs.getBoolean("Anonymity");
+			
 			query = "select FID from Folder where Foldername=" + '"' + folderName + '"';
 			rs = stmt.executeQuery(query);
 			rs.next();
+			
 			int FID = rs.getInt("FID");
+			
 			if (anonymity == true) {
 				System.out.println("Do you want to be anonymous?(true/false)");
 			    userAnonymity = Boolean.parseBoolean(myObj.nextLine());
-			    }
-			else {
+			} else {
 				userAnonymity = false;
 			}
 
@@ -56,7 +73,9 @@ public class AddPostCtrl extends DBConn {
 			threadStatement.execute();
 			
 			int tid = -1;
+			
 			rs = threadStatement.getGeneratedKeys();
+			
 			if(rs.next()) {
 				tid = rs.getInt(1);
 			} else {
@@ -66,9 +85,11 @@ public class AddPostCtrl extends DBConn {
 			if(rs != null) {
 					rs.close();
 			}
+			
 			if(threadStatement != null) {
 					threadStatement.close();
 			}
+			
 			// Creates a relation between the given thread and folder
 			threadInFolderStatement = conn.prepareStatement("insert into ThreadInFolder values"
 			 		+ "( (?), (?) )");
@@ -86,12 +107,13 @@ public class AddPostCtrl extends DBConn {
 	    	postStatement.setNull(7, Types.INTEGER);
 	    	postStatement.setString(8, "Headpost");
 	    	postStatement.execute();
-	    	
-	    	myObj.close();
 	    }
+	    
 	    catch (Exception e){
 	    	System.out.println(e);
 	    }
+	    
+	    System.out.println("Post lagt til");
 	}
 	public static void main(String[] args) {
 		LoginCtrl db = new LoginCtrl();
@@ -100,6 +122,6 @@ public class AddPostCtrl extends DBConn {
 		AddPostCtrl addPost = new AddPostCtrl();
 		addPost.connect();
 		addPost.startPost();
-		addPost.addHeadPost("Question", "Exam");
+		addPost.addHeadPost();
 	}
 }
