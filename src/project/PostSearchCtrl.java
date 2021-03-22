@@ -7,12 +7,8 @@ import java.util.Collection;
 
 public class PostSearchCtrl extends DBConn {
 	
-	int test = 0;
-	
 	public Collection<Integer> searchKeyWord(String keyWord) {
-		
 		Collection<Integer> threads = new ArrayList<Integer>();
-		
 		try {
 			Statement stmt = conn.createStatement();
 			
@@ -20,29 +16,14 @@ public class PostSearchCtrl extends DBConn {
 					+ '"' + keyWord + "%" + '"' + " or summary LIKE " + '"' + keyWord +  "%" 
 					+ '"' + ") and tid in ("
 					+ "Select tid from thread where coursecode =" + '"' + coursecode + '"' + ")";
-			
 			ResultSet rs = stmt.executeQuery(query);
-			
 			while (rs.next()) {
 				 threads.add(rs.getInt("TID"));
-				 test++;
 			}
 		}
 		catch (Exception e) {	
 			System.out.println(e);
 		}
-		
 		return threads;
 	}
-	
-	public static void main(String[] args) {
-		//LoginCtrl db = new LoginCtrl();
-	    //db.connect();
-	    //db.logUserIn();
-		PostSearchCtrl addPost = new PostSearchCtrl();
-		addPost.connect();
-		System.out.println(addPost.searchKeyWord("WAL"));
-		System.out.println(addPost.test);
-	}
-	
 }

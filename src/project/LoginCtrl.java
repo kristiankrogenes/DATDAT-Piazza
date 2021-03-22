@@ -47,10 +47,4 @@ public class LoginCtrl extends DBConn {
 			System.out.println(e);
 		}
 	}
-	
-	public static void main(String[] args) {
-	    LoginCtrl db = new LoginCtrl();
-	    db.connect();
-	    db.logUserIn();
-	}
 }

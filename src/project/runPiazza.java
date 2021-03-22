@@ -38,7 +38,6 @@ public class runPiazza extends DBConn {
 		PostSearchCtrl searchPost = new PostSearchCtrl();
 		searchPost.connect();
 		System.out.println(searchPost.searchKeyWord("WAL"));
-		System.out.println(searchPost.test);
 		System.out.println();
 		System.out.println();
 		

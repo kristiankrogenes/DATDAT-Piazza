@@ -30,11 +30,4 @@ public class StatCtrl extends DBConn {
 		}
 		return stats;
 	}
-	
-	public static void main(String[] args) {
-		StatCtrl stats = new StatCtrl();
-		stats.connect();
-		stats.getStats().stream().forEach(e -> System.out.println(e));
-	}
-
 }

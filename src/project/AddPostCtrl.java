@@ -12,7 +12,8 @@ public class AddPostCtrl extends DBConn {
 	
 	public void startPost() {
 		try {
-			postStatement = conn.prepareStatement("insert into Post(text, datecreated, anonymity, summary, tag, email, tid, paid, type) values "
+			postStatement = conn.prepareStatement("insert into Post"
+					+ "(text, datecreated, anonymity, summary, tag, email, tid, paid, type) values "
 			 		+ " ( (?), NOW(), (?), (?), (?), (?), (?), (?), (?) )");
 		}
 		catch (Exception e) {
@@ -23,8 +24,6 @@ public class AddPostCtrl extends DBConn {
 	public void addHeadPost() {
 		
 		Scanner myObj = new Scanner(System.in);
-		
-		
 		String postText;
 	    String summary;
 	    String tag;
@@ -34,7 +33,7 @@ public class AddPostCtrl extends DBConn {
 	    System.out.println("Enter Summary:");
 	    summary = myObj.nextLine();
 	    
-	    System.out.println("Enter text:"); 
+	    System.out.println("Enter text:");
 	    postText = myObj.nextLine();
 	    
 	    System.out.println("Enter tag:");
@@ -42,7 +41,6 @@ public class AddPostCtrl extends DBConn {
 	    
 	    System.out.println("Enter folder:");
 	    folderName = myObj.nextLine();
-	    
 	    
 	    try {
 	    	Statement stmt = conn.createStatement();
@@ -64,7 +62,6 @@ public class AddPostCtrl extends DBConn {
 			} else {
 				userAnonymity = false;
 			}
-
 			// Creates a thread 
 			String sql = "Insert into Thread(coursecode, colorcode) values (?, ?)";
 			threadStatement = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
@@ -114,14 +111,5 @@ public class AddPostCtrl extends DBConn {
 	    }
 	    
 	    System.out.println("Post lagt til");
-	}
-	public static void main(String[] args) {
-		LoginCtrl db = new LoginCtrl();
-	    db.connect();
-	    db.logUserIn();
-		AddPostCtrl addPost = new AddPostCtrl();
-		addPost.connect();
-		addPost.startPost();
-		addPost.addHeadPost();
 	}
 }

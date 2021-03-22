@@ -67,14 +67,5 @@ public class replyCtrl extends DBConn {
 	    	System.out.println(e);
 	    }
 	}
-	public static void main(String[] args) {
-		LoginCtrl db = new LoginCtrl();
-	    db.connect();
-	    db.logUserIn();
-		replyCtrl addPost2 = new replyCtrl();
-		addPost2.connect();
-		addPost2.startPost();
-		addPost2.addAnswer("Exam", 2, "Answer");
-	}
 }
 
