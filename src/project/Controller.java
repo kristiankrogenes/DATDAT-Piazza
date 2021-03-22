@@ -16,6 +16,7 @@ public class Controller extends DBConn {
 	Scanner myObj = new Scanner(System.in);
 
 	public void logUserIn() {
+		System.out.println("Log in using your email and password");
 
 		// Scanner myObj = new Scanner(System.in);
 		String email;
@@ -39,17 +40,17 @@ public class Controller extends DBConn {
 				String dbPassword = rs.getString("password");
 
 				if (password.equals(dbPassword)) {
-					System.out.println("Bruker med email: " + dbEmail + " er nå logget inn");
+					System.out.println("User with email: " + dbEmail + " is now logged in");
 					rs.close();
 					loggedInUser = dbEmail;
 				} else {
-					System.out.println("Passordet er feil");
+					System.out.println("Password is wrong");
 					rs.close();
 					logUserIn();
 				}
 
 			} else {
-				System.out.println("Epost er feil");
+				System.out.println("Email is wrong");
 				rs.close();
 				logUserIn();
 			}
@@ -86,8 +87,28 @@ public class Controller extends DBConn {
 		System.out.println("Enter tag:");
 		tag = myObj.nextLine();
 
-		System.out.println("Enter folder:");
+		System.out.println("Enter one of the following foldernames below: ");
+		Collection<String> folderNames = new ArrayList<>();
+		try {
+			Statement stmt = conn.createStatement();
+			String query = "Select foldername from folder";
+			ResultSet rs = stmt.executeQuery(query);
+			while (rs.next()) {
+				folderNames.add(rs.getString("Foldername"));
+			}
+			folderNames.stream().forEach(n -> System.out.println(n + " "));
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+
 		folderName = myObj.nextLine();
+		while (!folderNames.contains(folderName.toString())) {
+			folderName = null;
+			System.out
+					.println("You have to select a folder that exists. Enter one of the following foldernames below: ");
+			folderNames.stream().forEach(n -> System.out.println(n + " "));
+			folderName = myObj.nextLine();
+		}
 
 		try {
 			Statement stmt = conn.createStatement();
@@ -156,7 +177,8 @@ public class Controller extends DBConn {
 			System.out.println(e);
 		}
 
-		System.out.println("Post lagt til");
+		System.out
+				.println("Post added in folder " + folderName + " tagged as " + tag + " with this summary: " + summary);
 	}
 
 	public void addAnswer(String folderName, int PaID, String type) {
@@ -202,6 +224,7 @@ public class Controller extends DBConn {
 		} catch (Exception e) {
 			System.out.println(e);
 		}
+		System.out.println("Answer added to post with ID = " + PaID);
 	}
 
 	public Collection<Integer> searchKeyWord(String keyWord) {
@@ -234,12 +257,30 @@ public class Controller extends DBConn {
 				String name = rs.getNString(1);
 				int postsRead = rs.getInt(2);
 				int postsCreated = rs.getInt(3);
-				String str = "Navn: " + name + ", Tråder lest: " + postsRead + ", Poster opprettet: " + postsCreated;
+				String str = "Navn: " + name + ", Trï¿½der lest: " + postsRead + ", Poster opprettet: " + postsCreated;
 				stats.add(str);
 			}
 		} catch (Exception e) {
 		}
 		return stats;
+	}
+
+	public void runUseCases() {
+		System.out.println("Which usecase do you want to execute?(2-5)");
+		String usecase = myObj.nextLine();
+		if (usecase.equals("2")) {
+			addHeadPost();
+		} else if (usecase.equals("3")) {
+			addAnswer("Exam", 2, "Answer");
+		} else if (usecase.equals("4")) {
+			System.out.println("Posts with searchword WAL included in these thread IDs: ");
+			searchKeyWord("WAL").stream().forEach(e -> System.out.println(e));
+		} else if (usecase.equals("5")) {
+			getStats().stream().forEach(e -> System.out.println(e));
+		} else {
+			System.out.println("This is not a valid usecase");
+			runUseCases();
+		}
 	}
 
 	public void runPiazza() {
@@ -248,24 +289,12 @@ public class Controller extends DBConn {
 		startPost();
 		// Scanner myObj = new Scanner(System.in);
 		while (true) {
-			System.out.println("Which usecase do you want to execute?(2-5)");
-			int usecase = Integer.parseInt(myObj.nextLine());
-			if (usecase == 2) {
-				addHeadPost();
-			} else if (usecase == 3) {
-				addAnswer("Exam", 2, "Answer");
-			} else if (usecase == 4) {
-				System.out.println(searchKeyWord("WAL"));
-			} else if (usecase == 5) {
-				getStats().stream().forEach(e -> System.out.println(e));
-			} else {
-				System.out.println("This is not a valid usecase");
-			}
+			runUseCases();
 			System.out.println("Do you want to continue with the same user? (y/n)");
 			if (myObj.nextLine().equals("n")) {
 				logUserIn();
 			}
-			System.out.println("Press q to quit");
+			System.out.println("Press q to quit or press enter to continue");
 			if (myObj.nextLine().equals("q")) {
 				break;
 			}
