@@ -16,12 +16,15 @@ public class Controller extends DBConn {
 	PreparedStatement threadInFolderStatement;
 	Scanner myObj = new Scanner(System.in);
 
+	// Takes input from user and checks if email and password matches the database,
+	// and then logs the user in
 	public void logUserIn() throws SQLException {
 		System.out.println("Log in using your email and password");
 		System.out.println("Enter email:");
 		String email = myObj.nextLine();
 		System.out.println("Enter password:");
 		String password = myObj.nextLine();
+
 		Statement stmt = conn.createStatement();
 		String query = "select email, password from User where email=" + '"' + email + '"';
 		ResultSet rs = stmt.executeQuery(query);
@@ -30,9 +33,9 @@ public class Controller extends DBConn {
 			String dbEmail = rs.getString("email");
 			String dbPassword = rs.getString("password");
 			if (password.equals(dbPassword)) {
-				System.out.println("User with email: " + dbEmail + " is now logged in");
-				rs.close();
 				loggedInUser = dbEmail;
+				rs.close();
+				System.out.println(userType(loggedInUser) + " with email: " + dbEmail + " is now logged in");
 			} else {
 				System.out.println("Password is wrong");
 				rs.close();
@@ -46,12 +49,15 @@ public class Controller extends DBConn {
 		}
 	}
 
+	// Creates a preparedStatement for inserting a post to the database
 	public void startPost() throws SQLException {
 		postStatement = conn.prepareStatement(
 				"insert into Post" + "(text, datecreated, anonymity, summary, tag, email, tid, paid, type) values "
 						+ " ( (?), NOW(), (?), (?), (?), (?), (?), (?), (?) )");
 	}
 
+	// Takes the necessary input from user and inserts headpost and a new thread to
+	// the database
 	public void addHeadPost() throws SQLException {
 		String postText;
 		String summary;
@@ -67,6 +73,8 @@ public class Controller extends DBConn {
 
 		System.out.println("Enter tag:");
 		tag = myObj.nextLine();
+
+		// Checks if the input from user is valid
 		while (!(tag.equals("Question") || tag.equals("Announcement") || tag.equals("Homework")
 				|| tag.equals("Homework solutions") || tag.equals("Lecture notes")
 				|| tag.equals("General Announcement"))) {
@@ -80,6 +88,8 @@ public class Controller extends DBConn {
 		Statement stmt = conn.createStatement();
 		String query = "Select foldername from folder";
 		ResultSet rs = stmt.executeQuery(query);
+		// Extracts all folders from the database in the given course and checks if user
+		// input is valid
 		while (rs.next()) {
 			folderNames.add(rs.getString("Foldername"));
 		}
@@ -100,6 +110,8 @@ public class Controller extends DBConn {
 		rs = stmt.executeQuery(query);
 		rs.next();
 		int FID = rs.getInt("FID");
+
+		// Checks if the user is allowed to be anonymous within the given course
 		if (anonymity == true) {
 			System.out.println("Do you want to be anonymous?(true/false)");
 			userAnonymity = myObj.nextLine();
@@ -122,15 +134,10 @@ public class Controller extends DBConn {
 		rs = threadStatement.getGeneratedKeys();
 		if (rs.next()) {
 			tid = rs.getInt(1);
-		} else {
-			System.out.println("Funka ikke");
 		}
-		if (rs != null) {
-			rs.close();
-		}
-		if (threadStatement != null) {
-			threadStatement.close();
-		}
+		rs.close();
+		threadStatement.close();
+
 		// Creates a relation between the given thread and folder
 		threadInFolderStatement = conn.prepareStatement("insert into ThreadInFolder values" + "( (?), (?) )");
 		threadInFolderStatement.setInt(1, FID);
@@ -142,9 +149,11 @@ public class Controller extends DBConn {
 				.println("Post added in folder " + folderName + " tagged as " + tag + " with this summary: " + summary);
 	}
 
+	// Takes the necessary input from user and inserts an answer to the database
 	public void addAnswer(String folderName, int PaID, String type) throws SQLException {
 		String postText;
 		String userAnonymity;
+		System.out.println("You are now replying to post with id = 1");
 		System.out.println("Enter text:");
 		postText = myObj.nextLine();
 		Statement stmt = conn.createStatement();
@@ -157,20 +166,29 @@ public class Controller extends DBConn {
 		query = "select anonymity from Course where Coursecode=" + '"' + coursecode + '"';
 		rs = stmt.executeQuery(query);
 		rs.next();
-
 		Boolean anonymity = rs.getBoolean("Anonymity");
 
+		// Checks whether the user is allowed to be anonymous or not
 		if (anonymity == true) {
 			System.out.println("Do you want to be anonymous?(true/false)");
 			userAnonymity = myObj.nextLine();
+			while (!(userAnonymity.equals("true") || userAnonymity.equals("false"))) {
+				System.out.println("You have to write true or false");
+				System.out.println("Do you want to be anonymous?(true/false)");
+				userAnonymity = myObj.nextLine();
+			}
+
 		} else {
 			userAnonymity = "false";
 		}
-		// Creates an answer within an existing thread
+		// Creates an answer within an existing thread, the same thread as the post that
+		// is answered to
 		makePost(postText, userAnonymity, null, null, TID, PaID, type);
 		System.out.println("Answer added to post with ID = " + PaID);
 	}
 
+	// Returns a list with all threadID that contains one or more posts with a given
+	// keyword
 	public Collection<Integer> searchKeyWord(String keyWord) throws SQLException {
 		Collection<Integer> threads = new ArrayList<Integer>();
 		Statement stmt = conn.createStatement();
@@ -184,24 +202,34 @@ public class Controller extends DBConn {
 		return threads;
 	}
 
+	// Returns a list with all users, how many threads they have read and how many
+	// posts they have created, ordered by how many threads they have read.
 	public Collection<String> getStats() throws SQLException {
-		Collection<String> stats = new ArrayList<>();
-		Statement stmt = conn.createStatement();
-		String query = "Select user.fullname, count(distinct hasread.tid) as ThreadsRead,"
-				+ " count(distinct post.pid) as Postscreated"
-				+ " from (user left join hasread on user.email = hasread.email)"
-				+ " left join post on user.email = post.email group by user.email " + "order by threadsread desc; ";
-		ResultSet rs = stmt.executeQuery(query);
-		while (rs.next()) {
-			String name = rs.getNString(1);
-			int postsRead = rs.getInt(2);
-			int postsCreated = rs.getInt(3);
-			String str = "Name: " + name + ", Threads read: " + postsRead + ", Posts created: " + postsCreated;
-			stats.add(str);
+		if (userType(loggedInUser).equals("Student")) {
+			System.out.println("Only instructors are allowed to view statistics");
+			return null;
+		} else {
+			Collection<String> stats = new ArrayList<>();
+			Statement stmt = conn.createStatement();
+			String query = "Select user.fullname, count(distinct hasread.tid) as ThreadsRead,"
+					+ " count(distinct post.pid) as Postscreated"
+					+ " from (user left join hasread on user.email = hasread.email)"
+					+ " left join post on user.email = post.email group by user.email " + "order by threadsread desc; ";
+			ResultSet rs = stmt.executeQuery(query);
+			while (rs.next()) {
+				String name = rs.getNString(1);
+				int postsRead = rs.getInt(2);
+				int postsCreated = rs.getInt(3);
+				String str = "Name: " + name + ", Threads read: " + postsRead + ", Posts created: " + postsCreated;
+				stats.add(str);
+			}
+
+			return stats;
 		}
-		return stats;
 	}
 
+	// Gives the user a choice of which usecase to execute, and executes the given
+	// usecase from user
 	public void runUseCases() throws SQLException {
 		System.out.println("Which usecase do you want to execute?(2-5)");
 		String usecase = myObj.nextLine();
@@ -220,6 +248,8 @@ public class Controller extends DBConn {
 		}
 	}
 
+	// Asks the user to log in and gives option to quit and log in with another user
+	// The user can go on forever or quit whenever he/she wants
 	public void runPiazza() {
 		this.connect();
 		try {
@@ -228,7 +258,13 @@ public class Controller extends DBConn {
 			while (true) {
 				runUseCases();
 				System.out.println("Do you want to continue with the same user? (y/n)");
-				if (myObj.nextLine().equals("n")) {
+				String answer = myObj.nextLine();
+				while (!(answer.equals("y") || answer.equals("n"))) {
+					System.out.println("You must type a valid input");
+					System.out.println("Do you want to continue with the same user? (y/n)");
+					answer = myObj.nextLine();
+				}
+				if (answer.equals("n")) {
 					logUserIn();
 				}
 				System.out.println("Press q to quit or press enter to continue");
@@ -237,7 +273,6 @@ public class Controller extends DBConn {
 				}
 			}
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -258,6 +293,17 @@ public class Controller extends DBConn {
 		}
 		postStatement.setString(8, type);
 		postStatement.execute();
+	}
+
+	// Checks if the logged in user is a student or an instructor
+	public String userType(String email) throws SQLException {
+		Statement stmt = conn.createStatement();
+		String query = "select type from User where email=" + '"' + email + '"';
+		ResultSet rs = stmt.executeQuery(query);
+		rs.next();
+		String type = rs.getString("Type");
+		rs.close();
+		return type;
 	}
 
 	public static void main(String[] args) {
