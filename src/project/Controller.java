@@ -10,7 +10,8 @@ import java.util.Collection;
 import java.util.Scanner;
 
 public class Controller extends DBConn {
-
+	static String loggedInUser;
+	final static String coursecode = "TDT4145";
 	PreparedStatement postStatement;
 	PreparedStatement threadStatement;
 	PreparedStatement threadInFolderStatement;
